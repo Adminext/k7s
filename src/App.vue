@@ -6,50 +6,67 @@
       dark
     >
       <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+        <span style="font-size: 35px; font-weight: bold;">k7s</span>
       </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
     </v-app-bar>
+
+     <v-navigation-drawer
+        permanent
+        app
+    >
+      <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title class="text-h6">
+          PaaS Platform
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          software college @ buaa
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      </v-list-item>
+
+      <v-divider></v-divider>
+
+        <v-list
+          dense
+          nav
+        >
+          <v-list-item
+            v-for="item in items"
+            :key="item.title"
+            router :to="item.route"
+          >
+            <v-list-item-icon>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+    </v-navigation-drawer>
 
     <v-main>
       <router-view/>
     </v-main>
+
   </v-app>
+  
 </template>
 
 <script>
 
 export default {
   name: 'App',
-
-  data: () => ({
-    //
-  }),
+  data () {
+      return {
+        items: [
+          { title: '镜像管理', icon: 'mdi-view-dashboard', route: '/images'},
+          { title: '容器管理', icon: 'mdi-forum', route: '/containers'},
+          { title: '应用部署', icon: 'mdi-card-multiple', route: '/applications'},
+        ],
+      }
+    },
 };
 </script>
