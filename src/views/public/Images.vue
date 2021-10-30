@@ -81,6 +81,7 @@
 
           <v-card-text>
             <v-container>
+              <v-row>IMAGE ID: {{imageToInspect.longId}}</v-row>
               <v-row>IMAGE SHORT ID: {{imageToInspect.id}}</v-row>
               <v-row>CREATED TIME: {{timeFormatter(imageToInspect.time)}}</v-row>
               <v-row>SIZE: {{imageToInspect.size}}</v-row>
