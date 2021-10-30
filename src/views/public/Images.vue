@@ -126,6 +126,9 @@ export default {
     FromLocalDialogContent,
     FromRemoteDialogContent
   },
+  props: {
+    search: {type: String, default: ''},
+  },
   data () {
     return {
       headers: [
@@ -138,7 +141,7 @@ export default {
       ],
       images: [],
       imageList: [],
-      search: '',
+      //search: '',
       dialogFlag: false,
       imageToInspect: 0,
       showRawJson: false,
