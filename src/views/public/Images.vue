@@ -174,7 +174,6 @@ export default {
     },
     inspectImage(item) {
       this.imageToInspect = item;
-      console.log(item);
       this.dialogFlag = true;
     },
     async refreshList() {
@@ -204,7 +203,6 @@ export default {
         image.raw = this.imageList[i];
         this.images.push(image);
       }
-      console.log('List refreshed');
     }
   },
   async mounted() {
