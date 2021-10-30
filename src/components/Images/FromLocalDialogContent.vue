@@ -13,10 +13,10 @@
         </v-row>
         <v-row>
           <v-col :cols="6">
-            <v-text-field v-model="name" label="镜像名称" clearable :hint="'用英文逗号分割多个tag'"></v-text-field>
+            <v-text-field v-model="name" label="镜像名称" clearable :hint="'用英文逗号分割多个tag'" persistent-hint></v-text-field>
           </v-col>
           <v-col :cols="6">
-            <v-text-field v-model="version" label="镜像tag" clearable :hint="'留空以使用自定义格式tag'"></v-text-field>
+            <v-text-field v-model="version" label="镜像tag" clearable :hint="'留空以使用自定义格式tag'" persistent-hint></v-text-field>
           </v-col>
         </v-row>
         <v-row>
