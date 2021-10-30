@@ -44,9 +44,9 @@
           &nbsp;
           <v-tooltip left>
             <template v-slot:activator="{ on, attrs }">
-              <v-icon @click="commitContainer(item)" v-on="on" v-bind="attrs">mdi-file-edit-outline</v-icon>
+              <v-icon @click="handleCommitContainer(item)" v-on="on" v-bind="attrs">mdi-file-edit-outline</v-icon>
             </template>
-            <span>从容器制作镜像</span>
+            <span>提交容器</span>
           </v-tooltip>
           &nbsp;
           <v-tooltip left>
@@ -88,18 +88,18 @@
                 <v-card-text>
                   <v-container>
                     <v-row>
-                      <v-cols :cols="3">
+                      <v-col :cols="3">
                         <v-select v-model="createContainerForm.tmp.protocol" :items="['tcp', 'udp']" label="协议"></v-select>
-                      </v-cols>
+                      </v-col>
                       <v-spacer></v-spacer>
-                      <v-cols :cols="4">
+                      <v-col :cols="4">
                         <v-text-field v-model="createContainerForm.tmp.container_port" label="容器端口" clearable></v-text-field>
-                      </v-cols>
+                      </v-col>
                       <v-spacer></v-spacer>
-                      <v-cols :cols="4">
+                      <v-col :cols="4">
                         <v-text-field v-model="createContainerForm.tmp.host_port" label="主机端口" clearable></v-text-field>
-                      </v-cols>
-                      <v-cols :cols="1">
+                      </v-col>
+                      <v-col :cols="1">
                         <v-tooltip left>
                           <template v-slot:activator="{ on, attrs }">
                             <v-btn text fab @click="addPort" v-on="on" v-bind="attrs">
@@ -108,7 +108,7 @@
                           </template>
                           <span>添加端口映射</span>
                         </v-tooltip>
-                      </v-cols>
+                      </v-col>
                     </v-row>
                     <v-row>
                       <v-chip v-for="pair in createContainerForm.ports" :key="pair[0]" class="ma-2" close
@@ -145,6 +145,107 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="inspectDialogFlag" max-width="960px" v-if="inspectDialogFlag">
+      <v-card>
+        <v-card-title>
+          <span class="headline">{{ containerClicked.name }}</span>
+        </v-card-title>
+
+        <v-card-text>
+          <v-container>
+            <v-row>CONTAINER ID: {{containerClicked.longId}}</v-row>
+            <v-row>IMAGE SHORT ID: {{containerClicked.id}}</v-row>
+            <v-row>STATUS: {{containerClicked.status}}</v-row>
+            <v-row>IMAGE: </v-row>
+            <v-row>
+              <v-col>
+                <v-chip :to="{path: '/images/' + containerClicked.image.id.slice(7)}" dark color="blue">{{containerClicked.imageName}}</v-chip>
+              </v-col>
+            </v-row>
+            <v-row>LABELS:</v-row>
+            <v-row v-for="label in Object.getOwnPropertyNames(containerClicked.labels)" :key="label">
+              <v-col>
+                <v-chip v-if="label != '__ob__'"> {{label + ' : ' + containerClicked.labels[label]}} </v-chip>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-spacer></v-spacer>
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon @click="command('start',containerClicked)" v-on="on" v-bind="attrs">mdi-play-circle-outline</v-icon>
+                </template>
+                <span>启动容器</span>
+              </v-tooltip>
+              &nbsp;
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon @click="command('stop',containerClicked)" v-on="on" v-bind="attrs">mdi-stop-circle-outline</v-icon>
+                </template>
+                <span>停止容器</span>
+              </v-tooltip>
+              &nbsp;
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon @click="command('restart',containerClicked)" v-on="on" v-bind="attrs">mdi-restart</v-icon>
+                </template>
+                <span>重启容器</span>
+              </v-tooltip>
+              &nbsp;
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon @click="handleCommitContainer(containerClicked)" v-on="on" v-bind="attrs">mdi-file-edit-outline</v-icon>
+                </template>
+                <span>提交容器</span>
+              </v-tooltip>
+              &nbsp;
+              <v-tooltip top>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-icon @click="command('delete',containerClicked)" v-on="on" v-bind="attrs">mdi-delete-outline</v-icon>
+                </template>
+                <span>删除容器</span>
+              </v-tooltip>
+            </v-row>
+          </v-container>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="commitDialogFlag" max-width="960px" v-if="commitDialogFlag">
+      <v-card :loading="commitDialogLoading">
+        <v-card-title>
+          <span class="headline">提交容器{{ containerClicked.name }}到仓库</span>
+        </v-card-title>
+
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col :cols="6">
+                <v-text-field v-model="commitContainerForm.repository" label="仓库" clearable></v-text-field>
+              </v-col>
+              <v-col :cols="6">
+                <v-text-field v-model="commitContainerForm.tag" label="标签" clearable></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field v-model="commitContainerForm.author" label="作者" clearable></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col :cols="6">
+                <v-textarea outlined v-model="commitContainerForm.message" label="消息" clearable></v-textarea>
+              </v-col>
+              <v-col :cols="6">
+                <v-textarea outlined v-model="commitContainerForm.changes" label="附加指令" clearable></v-textarea>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="commitContainer">制作镜像</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -168,7 +269,6 @@
         containers: [],
         containerClicked: {},
         inspectDialogFlag: false,
-        commitDialogFlag: false,
 
         runDialogFlag: false,
         runDialogLoading: false,
@@ -184,6 +284,16 @@
             container_port: 0,
             host_port: 0,
           },
+        },
+
+        commitDialogFlag: false,
+        commitDialogLoading: false,
+        commitContainerForm: {
+          repository: '',
+          tag: '',
+          author: '',
+          message: '',
+          changes: '',
         },
 
         containerList: [],
@@ -208,7 +318,7 @@
         this.containers = [];
         for(let i = 0; i < this.containerList.length; i++) {
           let container = {};
-          container.name = this.containerList[i].name;
+          container.name = this.containerList[i].name === "" ? this.containerList[i].short_id : this.containerList[i].name;
           container.id = this.containerList[i].short_id;
           container.status = this.containerList[i].status;
           container.imageName = this.containerList[i].image.tags[0].slice(this.containerList[i].image.tags[0].lastIndexOf('/') + 1);
@@ -224,7 +334,7 @@
         this.containerClicked = item;
         this.inspectDialogFlag = true;
       },
-      commitContainer(item) {
+      handleCommitContainer(item) {
         this.containerClicked = item;
         this.commitDialogFlag = true;
       },
@@ -314,6 +424,23 @@
           this.result = '容器创建失败';
         })
         this.runDialogLoading = false;
+      },
+      async commitContainer() {
+        this.commitDialogLoading = true;
+        let form = new FormData();
+        form.append('container_id', this.containerClicked.longId);
+        form.append('repository', this.commitContainerForm.repository);
+        form.append('tag', this.commitContainerForm.tag);
+        form.append('message', this.commitContainerForm.message);
+        form.append('changes', this.commitContainerForm.changes);
+        form.append('author', this.commitContainerForm.author);
+        await this.$axios.post('/commit_container', form).then((res) => {
+          if(res === 'commit success') this.result = '容器已提交';
+          else throw res;
+        }).catch(() => {
+          alert('容器提交失败');
+        })
+        this.commitDialogLoading = false;
       },
       addPort() {
         this.createContainerForm.ports.push([this.createContainerForm.tmp.container_port + '/' + this.createContainerForm.tmp.protocol, this.createContainerForm.tmp.host_port]);
