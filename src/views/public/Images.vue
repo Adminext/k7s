@@ -62,11 +62,6 @@
               </v-row>
             </v-container>
           </v-card-text>
-
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="dialogFlag = !dialogFlag">close</v-btn>
-          </v-card-actions>
         </v-card>
       </v-dialog>
     </v-card>
