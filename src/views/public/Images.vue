@@ -163,7 +163,7 @@ export default {
       confirm('确认删除?') && this.images.splice(index, 1);
 
       let form = new FormData();
-      form.append('image_id', item.id);
+      form.append('image_id', item.longId);
       await this.$axios.post('/remove_image', form).then((res) => {
         if(res === 'delete success') alert(`镜像${item.id}已成功删除`);
         else throw res;
