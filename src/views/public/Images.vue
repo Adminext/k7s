@@ -81,7 +81,7 @@
 
           <v-card-text>
             <v-container>
-              <v-row>IMAGE ID: {{imageToInspect.name}}</v-row>
+              <v-row>IMAGE SHORT ID: {{imageToInspect.id}}</v-row>
               <v-row>CREATED TIME: {{timeFormatter(imageToInspect.time)}}</v-row>
               <v-row>SIZE: {{imageToInspect.size}}</v-row>
               <v-row>
@@ -134,7 +134,8 @@ export default {
       headers: [
         {text: 'NAME', align: 'start', sortable: true, value: 'name'},
         {text: 'TAG', align: 'start', sortable: true, value: 'tag'},
-        {text: 'IMAGE ID', align: 'start', sortable: true, value: 'id'},
+        {text: 'IMAGE ID', align: 'start', sortable: true, value: 'longId'},
+        {text: 'SHORT ID', align: 'start', sortable: true, value: 'id'},
         {text: 'CREATED', align: 'start', sortable: true, value: 'time', formatter: this.timeFormatter},
         {text: 'SIZE', align: 'start', sortable: true, value: 'size'},
         {text: 'ACTIONS', align: 'start', sortable: false, value: 'actions'},
@@ -198,6 +199,7 @@ export default {
         image.id = this.imageList[i].short_id.slice(this.imageList[i].short_id.lastIndexOf(':') + 1);
         image.time = this.imageList[i].attrs.Created;
         image.size = this.$utils.byte2FormatSize(this.imageList[i].attrs.Size);
+        image.longId = this.imageList[i].id.slice(7);
         image.raw = this.imageList[i];
         this.images.push(image);
       }
