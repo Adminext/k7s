@@ -34,45 +34,6 @@
           <v-icon @click="deleteImage(item)">mdi-delete-outline</v-icon>
         </template>
       </v-data-table>
-      <v-speed-dial
-          v-model="speedDialFlag"
-          fixed :bottom="true" :right="true"
-          :direction="'top'" :transition="'slide-y-reverse-transition'"
-      >
-        <template v-slot:activator>
-          <v-tooltip left>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn color="blue darken-2" dark fab
-                     v-on="on" v-bind="attrs"
-              >
-                <v-icon v-if="speedDialFlag">mdi-close</v-icon>
-                <v-icon v-else>mdi-plus</v-icon>
-              </v-btn>
-            </template>
-            <span>添加镜像</span>
-          </v-tooltip>
-        </template>
-        <v-tooltip left>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn fab dark small color="green"
-                   v-on="on" v-bind="attrs" @click="fromRemoteDialogFlag = true"
-            >
-              <v-icon>mdi-download</v-icon>
-            </v-btn>
-          </template>
-          <span>从远程镜像仓库</span>
-        </v-tooltip>
-        <v-tooltip left>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn fab dark small color="indigo"
-                   v-on="on" v-bind="attrs" @click="fromLocalDialogFlag = true"
-            >
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-          </template>
-          <span>从本地Docker File</span>
-        </v-tooltip>
-      </v-speed-dial>
       <v-dialog v-model="dialogFlag" max-width="960px" v-if="dialogFlag">
         <v-card>
           <v-card-title>
@@ -109,6 +70,45 @@
         </v-card>
       </v-dialog>
     </v-card>
+    <v-speed-dial
+        v-model="speedDialFlag"
+        fixed :bottom="true" :right="true"
+        :direction="'top'" :transition="'slide-y-reverse-transition'"
+    >
+      <template v-slot:activator>
+        <v-tooltip left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn color="blue darken-2" dark fab
+                   v-on="on" v-bind="attrs"
+            >
+              <v-icon v-if="speedDialFlag">mdi-close</v-icon>
+              <v-icon v-else>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          <span>添加镜像</span>
+        </v-tooltip>
+      </template>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn fab dark small color="green"
+                 v-on="on" v-bind="attrs" @click="fromRemoteDialogFlag = true"
+          >
+            <v-icon>mdi-download</v-icon>
+          </v-btn>
+        </template>
+        <span>从远程镜像仓库</span>
+      </v-tooltip>
+      <v-tooltip left>
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn fab dark small color="indigo"
+                 v-on="on" v-bind="attrs" @click="fromLocalDialogFlag = true"
+          >
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+        </template>
+        <span>从本地Docker File</span>
+      </v-tooltip>
+    </v-speed-dial>
     <v-dialog v-model="fromRemoteDialogFlag" max-width="960px" @click:outside="refreshList" v-if="fromRemoteDialogFlag" >
       <FromRemoteDialogContent></FromRemoteDialogContent>
     </v-dialog>
