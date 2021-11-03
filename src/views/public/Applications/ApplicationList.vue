@@ -241,10 +241,8 @@ export default {
   methods: {
     onCreateConfirm() {
          if (
-        !this.namespace ||
-        !this.depConfig||
-        this.depConfig.length === 0 || !this.srvConfig || this.srvConfig.length === 0
-      ) {
+        !this.namespace)
+        {
         this.toastE("字段不得留空");
         return;
       }

@@ -144,7 +144,6 @@
                       dark
                       v-bind="attrs"
                       v-on="on"
-                      @click="onUpdateClick(item)"
                       >删除</v-btn
                     >
                   </template>
@@ -244,7 +243,6 @@ export default {
           this.toastE(e);
           this.refresh();
         });
-      this.dialog = false;
     },
     onCreateConfirm() {
       if (
