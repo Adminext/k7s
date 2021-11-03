@@ -17,7 +17,12 @@ const routes = [
   {
     path: '/images',
     name: 'Images',
-    component: Images
+    component: Images,
+  },
+  {
+    path: '/images/:search',
+    component: Images,
+    props: true,
   },
   {
     path: '/containers',

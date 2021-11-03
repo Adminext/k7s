@@ -12,6 +12,22 @@ Vue.prototype.$axios = axios;
 Vue.config.productionTip = false
 Vue.use(VueAxios);
 
+//自适应文件大小转换工具加入原型链
+Vue.prototype.$utils ={
+  byte2FormatSize: (filesize) => {
+    if(null==filesize||filesize==''){
+      return "0 Bytes";
+    }
+    const unitArr = new Array("Bytes","KB","MB","GB","TB","PB","EB","ZB","YB");
+    let index=0;
+    let srcsize = parseFloat(filesize);
+    index=Math.floor(Math.log(srcsize)/Math.log(1024));
+    let size =srcsize/Math.pow(1024,index);
+    size=size.toFixed(2);
+    return size+unitArr[index];
+  }
+}
+
 new Vue({
   router,
   store,
