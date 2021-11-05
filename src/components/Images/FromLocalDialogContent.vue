@@ -64,8 +64,8 @@ export default {
       }
       this.cardLoading = true;
       await this.$axios.post('/build_image', form).then((res) => {
-        if(res === 'build success') this.result = '镜像构建完成';
-        else throw res;
+        if(res.data === 'build success') this.result = '镜像构建完成';
+        else throw res.data;
       }).catch(() => {
         this.result = '镜像构建失败';
       })

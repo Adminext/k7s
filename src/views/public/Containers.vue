@@ -140,6 +140,7 @@
         </v-card-text>
 
         <v-card-actions>
+          <span>{{result}}</span>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="runContainer">创建并运行</v-btn>
         </v-card-actions>
@@ -241,8 +242,9 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
+          <span>{{result}}</span>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="commitContainer">制作镜像</v-btn>
+          <v-btn color="blue darken-1" text @click="commitContainer">提交容器</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -296,26 +298,27 @@
           message: '',
           changes: '',
         },
+        result: '',
 
         containerList: [],
       }
     },
     methods: {
       async refreshList() {
-        /* TODO delete debug op
-        await this.$axios.get('/list_images').then((res) => {
+
+        await this.$axios.get('/list_containers').then((res) => {
           if(res) {
             console.log(res);
-            this.imageList = res;
+            this.containerList = res.data;
           }
         }).catch((err) => {
           console.log(err);
         })
-        */
-        await new Promise((resolve) => {
-          this.containerList = [{"id": "c0d61e1a5542835be05f3150e1a64878ad679f11d1f789bef4aa90a62241f3e7","image": {"id": "sha256:9da615fced53bc1bc11e3d7f20a37873362e1d5354354238f0b63c6d549f7f66","tags": ["harbor.scs.buaa.edu.cn/library/mysql:8","harbor.scs.buaa.edu.cn/library/mysql:latest"]},"labels": {},"name": "mysql_test","short_id": "c0d61e1a55","status": "running"},{"id": "fac360b20dfd76c3778b8be9aeb5c8943727ef7ef433bb146ebf8557d11cc9fb","image": {"id": "sha256:9fa1cc16ad6d525b8319e86c05a7fb228f97aeaf4bcda0033a709f018a2e3eee","tags": ["registry.cn-hangzhou.aliyuncs.com/google_containers/kicbase:v0.0.27"]},"labels": {"created_by.minikube.sigs.k8s.io": "true","mode.minikube.sigs.k8s.io": "minikube","name.minikube.sigs.k8s.io": "minikube","role.minikube.sigs.k8s.io": ""},"name": "minikube","short_id": "fac360b20d","status": "running"}];
-          resolve();
-        })
+
+        // await new Promise((resolve) => {
+        //   this.containerList = [{"id": "c0d61e1a5542835be05f3150e1a64878ad679f11d1f789bef4aa90a62241f3e7","image": {"id": "sha256:9da615fced53bc1bc11e3d7f20a37873362e1d5354354238f0b63c6d549f7f66","tags": ["harbor.scs.buaa.edu.cn/library/mysql:8","harbor.scs.buaa.edu.cn/library/mysql:latest"]},"labels": {},"name": "mysql_test","short_id": "c0d61e1a55","status": "running"},{"id": "fac360b20dfd76c3778b8be9aeb5c8943727ef7ef433bb146ebf8557d11cc9fb","image": {"id": "sha256:9fa1cc16ad6d525b8319e86c05a7fb228f97aeaf4bcda0033a709f018a2e3eee","tags": ["registry.cn-hangzhou.aliyuncs.com/google_containers/kicbase:v0.0.27"]},"labels": {"created_by.minikube.sigs.k8s.io": "true","mode.minikube.sigs.k8s.io": "minikube","name.minikube.sigs.k8s.io": "minikube","role.minikube.sigs.k8s.io": ""},"name": "minikube","short_id": "fac360b20d","status": "running"}];
+        //   resolve();
+        // })
         this.containers = [];
         for(let i = 0; i < this.containerList.length; i++) {
           let container = {};
@@ -348,8 +351,8 @@
             let form = new FormData();
             form.append('container_id', item.longId);
             await this.$axios.post('/remove_container', form).then((res) => {
-              if(res === 'remove success') alert(`镜像${item.id}已成功删除`);
-              else throw res;
+              if(res.data === 'remove success') alert(`镜像${item.id}已成功删除`) && this.refreshList();
+              else throw res.data;
             }).catch(() => {
               alert(`镜像${item.id}删除失败`);
               this.refreshList();
@@ -362,8 +365,8 @@
             let form = new FormData();
             form.append('container_id', item.longId);
             await this.$axios.post('/start_container', form).then((res) => {
-              if(res === 'start success') alert(`镜像${item.id}已启动`);
-              else throw res;
+              if(res.data === 'start success') alert(`镜像${item.id}已启动`) && this.refreshList();
+              else throw res.data;
             }).catch(() => {
               alert(`镜像${item.id}无法启动`);
               this.refreshList();
@@ -376,11 +379,12 @@
             let form = new FormData();
             form.append('container_id', item.longId);
             await this.$axios.post('/stop_container', form).then((res) => {
-              if(res === 'stop success') alert(`镜像${item.id}已停止`);
-              else throw res;
+              if(res.data === 'stop success') {
+                alert(`镜像${item.id}已停止`) && this.refreshList();
+              }
+              else throw res.data;
             }).catch(() => {
-              alert(`镜像${item.id}无法停止`);
-              this.refreshList();
+              alert(`镜像${item.id}无法停止`) && this.refreshList();
             })
           }
           break;
@@ -390,8 +394,8 @@
             let form = new FormData();
             form.append('container_id', item.longId);
             await this.$axios.post('/restart_container', form).then((res) => {
-              if(res === 'restart success') alert(`镜像${item.id}已成功重启`);
-              else throw res;
+              if(res.data === 'restart success') alert(`镜像${item.id}已成功重启`) && this.refreshList();
+              else throw res.data;
             }).catch(() => {
               alert(`镜像${item.id}重启失败`);
               this.refreshList();
@@ -418,11 +422,13 @@
         for(let i = 0, l = this.createContainerForm.environment.length; i < l; i++) {
           form.append('environment', this.createContainerForm.environment[i]);
         }
+        this.result = '正在加载...';
         await this.$axios.post('/run_container', form).then((res) => {
-          if(res === 'create success') this.result = '容器已启动';
-          else throw res;
+          if(res.data === 'create success') this.result = '容器已启动';
+          else throw res.data;
         }).catch(() => {
           this.result = '容器创建失败';
+          alert('容器提交失败');
         })
         this.runDialogLoading = false;
       },
@@ -435,10 +441,12 @@
         form.append('message', this.commitContainerForm.message);
         form.append('changes', this.commitContainerForm.changes);
         form.append('author', this.commitContainerForm.author);
+        this.result = '正在加载...'
         await this.$axios.post('/commit_container', form).then((res) => {
-          if(res === 'commit success') this.result = '容器已提交';
-          else throw res;
+          if(res.data === 'commit success') this.result = '容器已提交';
+          else throw res.data;
         }).catch(() => {
+          this.result = '容器提交失败';
           alert('容器提交失败');
         })
         this.commitDialogLoading = false;

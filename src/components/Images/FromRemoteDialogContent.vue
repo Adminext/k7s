@@ -41,8 +41,8 @@ export default {
       form.append('repository', this.url);
       this.cardLoading = true;
       await this.$axios.post('/pull_image', form).then((res) => {
-        if(res === 'pull success') this.result = '镜像拉取完成';
-        else throw res;
+        if(res.data === 'pull success') this.result = '镜像拉取完成';
+        else throw res.data;
       }).catch(() => {
         this.result = '镜像拉取失败';
       })
